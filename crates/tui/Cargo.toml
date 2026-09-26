@@ -1,0 +1,14 @@
+[package]
+name = "pantones-tui"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "pantones"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.6.6", features = ["derive"] }
+crossterm = "0.29.0"
+ratatui = "0.30.2"
+pantones-core = { path = "../core" }
