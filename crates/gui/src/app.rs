@@ -15,6 +15,7 @@ const GRAY: Color32 = Color32::from_rgb(158, 165, 181);
 const FAINT: Color32 = Color32::from_rgb(84, 92, 112);
 const SELECT_BG: Color32 = Color32::from_rgb(52, 62, 92);
 const ERROR: Color32 = Color32::from_rgb(232, 110, 110);
+const ZERO_ROW_BG: Color32 = Color32::from_rgb(74, 26, 26);
 
 #[derive(Clone, Copy, PartialEq)]
 enum SortMode {
@@ -537,7 +538,19 @@ impl GuiApp {
                     let p = &pantones[gi];
                     row.set_selected(selected == Some(gi));
 
+                    let zero = p.weight_kg == 0.0;
+                    let zero_bg = |ui: &mut egui::Ui| {
+                        if zero {
+                            ui.painter().rect_filled(
+                                ui.max_rect().expand2(0.5 * ui.spacing().item_spacing),
+                                egui::CornerRadius::ZERO,
+                                ZERO_ROW_BG,
+                            );
+                        }
+                    };
+
                     row.col(|ui| {
+                        zero_bg(ui);
                         let (rect, _) =
                             ui.allocate_exact_size(egui::vec2(26.0, 16.0), egui::Sense::hover());
                         let color = Color32::from_rgb(p.rgb_r, p.rgb_g, p.rgb_b);
@@ -552,19 +565,28 @@ impl GuiApp {
                     });
 
                     row.col(|ui| {
+                        zero_bg(ui);
                         ui.label(RichText::new(&p.number).strong());
                     });
                     row.col(|ui| {
+                        zero_bg(ui);
                         ui.label(format!("{}", p.cmyk()));
                     });
                     row.col(|ui| {
+                        zero_bg(ui);
                         ui.label(p.html());
                     });
                     row.col(|ui| {
+                        zero_bg(ui);
                         ui.label(p.rgb_string());
                     });
                     row.col(|ui| {
-                        ui.label(format_weight(p.weight_kg));
+                        zero_bg(ui);
+                        ui.label(RichText::new(format_weight(p.weight_kg)).color(if zero {
+                            ERROR
+                        } else {
+                            TEXT
+                        }));
                     });
 
                     let resp = row.response();
